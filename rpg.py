@@ -35,9 +35,6 @@ class Function:
         dice=list(map(int,dice.split('d')))
         return [random.randint(1,dice[0]) for i in range(dice[1])]
 
-    def move(self,direction): #1 in map movement by direction
-        pass
-
     def set_bar(self,stat,Num):
         if Num<0: pass #1 return ?
         else:
@@ -111,17 +108,36 @@ class Setting: #0 game set
 
 class Main: #0 game backend
     def __init__(self):
-        pass
+        pass 
 
     def get_movement(self): #0 
         if key=='\xe0':
             key=msvcrt.getch()
-        funtion.move(['up','left','down','right'][[b'H',b'K',b'P',b'M'].index(key)])
+        game.move(['up','left','down','right'][[b'H',b'K',b'P',b'M'].index(key)])
         
 
-class Game: #0 game frontend
+class Game: #0 game frontend function
     def __init__(self):
         pass
+
+    def move(self,movement):
+        player.move(movement)
+        if abs(dungeon.max_map[movement[0]][movement[1]]-player.pos[movement[1]])<10:
+            dungeon.max_map[movement[0]][movement[1]]+=movement[0]+movement[1]
+            dungeon.extend(movement)
+        
+class Dungeon: #0 map
+    def __init__(self):
+        self.map=[] #0 [[0,1,2,3,4,-4,-3,-2,-1],[]] [ws][ad]
+        self.max_map=[[None,10,-10],[10],[-10]] #0 [0,1][0,-1][1,0][-1,0]
+    
+    def extend(self,movement):
+        index=self.max_map[movement[0]][movement[1]]
+        if movement[0]:
+            for row_index in range(self.map):
+                self.map[row_index].insert(index,'■')
+        else:
+            self.map.insert(index,['■']*len(self.map[0]))
 
 class Event: #0 game event
     def __init__(self):
@@ -154,6 +170,11 @@ class Player: #0 character overall
         self.exp=0
         self.gold=1000
 
+        self.pos=[0,0]
+    
+    def move(self,movement):
+        self.pos=[self.pos[0]+movement[0],self.pos[1]+movement[1]]
+
 
 #############
 function=Function() #0 set
@@ -161,5 +182,6 @@ main=Main()
 
 setting=Setting()
 game=Game()
+dungeon=Dungeon()
 event=Event()
 player=Player()
